@@ -1,0 +1,30 @@
+{
+  "name": "unipointer",
+  "version": "0.1.0",
+  "description": "Do one thing with one pointer",
+  "main": "unipointer.js",
+  "dependencies": {
+    "wolfy87-eventemitter": "~4.2.11",
+    "eventie": "~1.0.6"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/metafizzy/unipointer.git"
+  },
+  "keywords": [
+    "pointer",
+    "touch",
+    "mouse",
+    "browser",
+    "DOM"
+  ],
+  "author": "David DeSandro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/metafizzy/unipointer/issues"
+  },
+  "homepage": "https://github.com/metafizzy/unipointer"
+}
