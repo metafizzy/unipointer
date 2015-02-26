@@ -1,7 +1,7 @@
 {
   "name": "unipointer",
   "main": "unipointer.js",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "dependencies": {
     "eventEmitter": "~4.2.11",
     "eventie": "git://github.com/desandro/eventie.git#^1"

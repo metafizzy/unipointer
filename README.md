@@ -2,7 +2,7 @@
 
 Base class for doing one thing with pointer event
 
-Used with [Unidragger](https://github.com/metafizzy/unidragger) and TapListener
+Used with [Unidragger](https://github.com/metafizzy/unidragger) and [TapListener](https://github.com/metafizzy/tap-listener)
 
 ## Install
 

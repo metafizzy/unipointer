@@ -1,6 +1,6 @@
 {
   "name": "unipointer",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Do one thing with one pointer",
   "main": "unipointer.js",
   "dependencies": {

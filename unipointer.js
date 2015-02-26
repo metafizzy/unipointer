@@ -1,5 +1,5 @@
 /*!
- * Unipointer v0.1.0
+ * Unipointer v1.0.0
  * base class for doing one thing with pointer event
  * MIT license
  */
