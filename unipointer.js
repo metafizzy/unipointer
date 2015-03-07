@@ -1,5 +1,5 @@
 /*!
- * Unipointer v1.0.0
+ * Unipointer v1.1.0
  * base class for doing one thing with pointer event
  * MIT license
  */
@@ -136,7 +136,7 @@ Unipointer.prototype._pointerDown = function( event, pointer ) {
 
 Unipointer.prototype.pointerDown = function( event, pointer ) {
   this._bindPostStartEvents( event );
-  this.emitEvent( 'pointerDown', [ this, event, pointer ] );
+  this.emitEvent( 'pointerDown', [ event, pointer ] );
 };
 
 // hash of events to be bound after start event
@@ -213,7 +213,7 @@ Unipointer.prototype._pointerMove = function( event, pointer ) {
 
 // public
 Unipointer.prototype.pointerMove = function( event, pointer ) {
-  this.emitEvent( 'pointerMove', [ this, event, pointer ] );
+  this.emitEvent( 'pointerMove', [ event, pointer ] );
 };
 
 // ----- end event ----- //
@@ -250,7 +250,7 @@ Unipointer.prototype._pointerUp = function( event, pointer ) {
 
 // public
 Unipointer.prototype.pointerUp = function( event, pointer ) {
-  this.emitEvent( 'pointerUp', [ this, event, pointer ] );
+  this.emitEvent( 'pointerUp', [ event, pointer ] );
 };
 
 // ----- pointer done ----- //
@@ -296,7 +296,7 @@ Unipointer.prototype._pointerCancel = function( event, pointer ) {
 
 // public
 Unipointer.prototype.pointerCancel = function( event, pointer ) {
-  this.emitEvent( 'pointerCancel', [ this, event, pointer ] );
+  this.emitEvent( 'pointerCancel', [ event, pointer ] );
 };
 
 // -----  ----- //
