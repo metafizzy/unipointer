@@ -1,5 +1,5 @@
 /*!
- * Unipointer v1.1.0
+ * Unipointer v2.0.0
  * base class for doing one thing with pointer event
  * MIT license
  */
@@ -14,28 +14,25 @@
   if ( typeof define == 'function' && define.amd ) {
     // AMD
     define( [
-      'eventEmitter/EventEmitter',
-      'eventie/eventie'
-    ], function( EventEmitter, eventie ) {
-      return factory( window, EventEmitter, eventie );
+      'eventEmitter/EventEmitter'
+    ], function( EventEmitter ) {
+      return factory( window, EventEmitter );
     });
-  } else if ( typeof exports == 'object' ) {
+  } else if ( typeof module == 'object' && module.exports ) {
     // CommonJS
     module.exports = factory(
       window,
-      require('wolfy87-eventemitter'),
-      require('eventie')
+      require('wolfy87-eventemitter')
     );
   } else {
     // browser global
     window.Unipointer = factory(
       window,
-      window.EventEmitter,
-      window.eventie
+      window.EventEmitter
     );
   }
 
-}( window, function factory( window, EventEmitter, eventie ) {
+}( window, function factory( window, EventEmitter ) {
 
 'use strict';
 
@@ -44,13 +41,13 @@ function noop() {}
 function Unipointer() {}
 
 // inherit EventEmitter
-Unipointer.prototype = new EventEmitter();
+var proto = Unipointer.prototype = Object.create( EventEmitter.prototype );
 
-Unipointer.prototype.bindStartEvent = function( elem ) {
+proto.bindStartEvent = function( elem ) {
   this._bindStartEvent( elem, true );
 };
 
-Unipointer.prototype.unbindStartEvent = function( elem ) {
+proto.unbindStartEvent = function( elem ) {
   this._bindStartEvent( elem, false );
 };
 
@@ -58,26 +55,26 @@ Unipointer.prototype.unbindStartEvent = function( elem ) {
  * works as unbinder, as you can ._bindStart( false ) to unbind
  * @param {Boolean} isBind - will unbind if falsey
  */
-Unipointer.prototype._bindStartEvent = function( elem, isBind ) {
+proto._bindStartEvent = function( elem, isBind ) {
   // munge isBind, default to true
   isBind = isBind === undefined ? true : !!isBind;
-  var bindMethod = isBind ? 'bind' : 'unbind';
+  var bindMethod = isBind ? 'addEventListener' : 'removeEventListener';
 
   if ( window.navigator.pointerEnabled ) {
     // W3C Pointer Events, IE11. See https://coderwall.com/p/mfreca
-    eventie[ bindMethod ]( elem, 'pointerdown', this );
+    elem[ bindMethod ]( 'pointerdown', this );
   } else if ( window.navigator.msPointerEnabled ) {
     // IE10 Pointer Events
-    eventie[ bindMethod ]( elem, 'MSPointerDown', this );
+    elem[ bindMethod ]( 'MSPointerDown', this );
   } else {
     // listen for both, for devices like Chrome Pixel
-    eventie[ bindMethod ]( elem, 'mousedown', this );
-    eventie[ bindMethod ]( elem, 'touchstart', this );
+    elem[ bindMethod ]( 'mousedown', this );
+    elem[ bindMethod ]( 'touchstart', this );
   }
 };
 
 // trigger handler methods for events
-Unipointer.prototype.handleEvent = function( event ) {
+proto.handleEvent = function( event ) {
   var method = 'on' + event.type;
   if ( this[ method ] ) {
     this[ method ]( event );
@@ -85,8 +82,8 @@ Unipointer.prototype.handleEvent = function( event ) {
 };
 
 // returns the touch that we're keeping track of
-Unipointer.prototype.getTouch = function( touches ) {
-  for ( var i=0, len = touches.length; i < len; i++ ) {
+proto.getTouch = function( touches ) {
+  for ( var i=0; i < touches.length; i++ ) {
     var touch = touches[i];
     if ( touch.identifier == this.pointerIdentifier ) {
       return touch;
@@ -96,7 +93,7 @@ Unipointer.prototype.getTouch = function( touches ) {
 
 // ----- start event ----- //
 
-Unipointer.prototype.onmousedown = function( event ) {
+proto.onmousedown = function( event ) {
   // dismiss clicks from right or middle buttons
   var button = event.button;
   if ( button && ( button !== 0 && button !== 1 ) ) {
@@ -105,12 +102,12 @@ Unipointer.prototype.onmousedown = function( event ) {
   this._pointerDown( event, event );
 };
 
-Unipointer.prototype.ontouchstart = function( event ) {
+proto.ontouchstart = function( event ) {
   this._pointerDown( event, event.changedTouches[0] );
 };
 
-Unipointer.prototype.onMSPointerDown =
-Unipointer.prototype.onpointerdown = function( event ) {
+proto.onMSPointerDown =
+proto.onpointerdown = function( event ) {
   this._pointerDown( event, event );
 };
 
@@ -119,7 +116,7 @@ Unipointer.prototype.onpointerdown = function( event ) {
  * @param {Event} event
  * @param {Event or Touch} pointer
  */
-Unipointer.prototype._pointerDown = function( event, pointer ) {
+proto._pointerDown = function( event, pointer ) {
   // dismiss other pointers
   if ( this.isPointerDown ) {
     return;
@@ -134,7 +131,7 @@ Unipointer.prototype._pointerDown = function( event, pointer ) {
   this.pointerDown( event, pointer );
 };
 
-Unipointer.prototype.pointerDown = function( event, pointer ) {
+proto.pointerDown = function( event, pointer ) {
   this._bindPostStartEvents( event );
   this.emitEvent( 'pointerDown', [ event, pointer ] );
 };
@@ -147,54 +144,46 @@ var postStartEvents = {
   MSPointerDown: [ 'MSPointerMove', 'MSPointerUp', 'MSPointerCancel' ]
 };
 
-Unipointer.prototype._bindPostStartEvents = function( event ) {
+proto._bindPostStartEvents = function( event ) {
   if ( !event ) {
     return;
   }
   // get proper events to match start event
   var events = postStartEvents[ event.type ];
-  // IE8 needs to be bound to document
-  var node = event.preventDefault ? window : document;
   // bind events to node
-  for ( var i=0, len = events.length; i < len; i++ ) {
-    var evnt = events[i];
-    eventie.bind( node, evnt, this );
-  }
+  events.forEach( function( eventName ) {
+    window.addEventListener( eventName, this );
+  }, this );
   // save these arguments
-  this._boundPointerEvents = {
-    events: events,
-    node: node
-  };
+  this._boundPointerEvents = events;
 };
 
-Unipointer.prototype._unbindPostStartEvents = function() {
-  var args = this._boundPointerEvents;
-  // IE8 can trigger dragEnd twice, check for _boundEvents
-  if ( !args || !args.events ) {
+proto._unbindPostStartEvents = function() {
+  // check for _boundEvents, in case dragEnd triggered twice (old IE8 bug)
+  if ( !this._boundPointerEvents ) {
     return;
   }
+  this._boundPointerEvents.forEach( function( eventName ) {
+    window.removeEventListener( eventName, this );
+  }, this );
 
-  for ( var i=0, len = args.events.length; i < len; i++ ) {
-    var event = args.events[i];
-    eventie.unbind( args.node, event, this );
-  }
   delete this._boundPointerEvents;
 };
 
 // ----- move event ----- //
 
-Unipointer.prototype.onmousemove = function( event ) {
+proto.onmousemove = function( event ) {
   this._pointerMove( event, event );
 };
 
-Unipointer.prototype.onMSPointerMove =
-Unipointer.prototype.onpointermove = function( event ) {
+proto.onMSPointerMove =
+proto.onpointermove = function( event ) {
   if ( event.pointerId == this.pointerIdentifier ) {
     this._pointerMove( event, event );
   }
 };
 
-Unipointer.prototype.ontouchmove = function( event ) {
+proto.ontouchmove = function( event ) {
   var touch = this.getTouch( event.changedTouches );
   if ( touch ) {
     this._pointerMove( event, touch );
@@ -207,30 +196,30 @@ Unipointer.prototype.ontouchmove = function( event ) {
  * @param {Event or Touch} pointer
  * @private
  */
-Unipointer.prototype._pointerMove = function( event, pointer ) {
+proto._pointerMove = function( event, pointer ) {
   this.pointerMove( event, pointer );
 };
 
 // public
-Unipointer.prototype.pointerMove = function( event, pointer ) {
+proto.pointerMove = function( event, pointer ) {
   this.emitEvent( 'pointerMove', [ event, pointer ] );
 };
 
 // ----- end event ----- //
 
 
-Unipointer.prototype.onmouseup = function( event ) {
+proto.onmouseup = function( event ) {
   this._pointerUp( event, event );
 };
 
-Unipointer.prototype.onMSPointerUp =
-Unipointer.prototype.onpointerup = function( event ) {
+proto.onMSPointerUp =
+proto.onpointerup = function( event ) {
   if ( event.pointerId == this.pointerIdentifier ) {
     this._pointerUp( event, event );
   }
 };
 
-Unipointer.prototype.ontouchend = function( event ) {
+proto.ontouchend = function( event ) {
   var touch = this.getTouch( event.changedTouches );
   if ( touch ) {
     this._pointerUp( event, touch );
@@ -243,20 +232,20 @@ Unipointer.prototype.ontouchend = function( event ) {
  * @param {Event or Touch} pointer
  * @private
  */
-Unipointer.prototype._pointerUp = function( event, pointer ) {
+proto._pointerUp = function( event, pointer ) {
   this._pointerDone();
   this.pointerUp( event, pointer );
 };
 
 // public
-Unipointer.prototype.pointerUp = function( event, pointer ) {
+proto.pointerUp = function( event, pointer ) {
   this.emitEvent( 'pointerUp', [ event, pointer ] );
 };
 
 // ----- pointer done ----- //
 
 // triggered on pointer up & pointer cancel
-Unipointer.prototype._pointerDone = function() {
+proto._pointerDone = function() {
   // reset properties
   this.isPointerDown = false;
   delete this.pointerIdentifier;
@@ -265,18 +254,18 @@ Unipointer.prototype._pointerDone = function() {
   this.pointerDone();
 };
 
-Unipointer.prototype.pointerDone = noop;
+proto.pointerDone = noop;
 
 // ----- pointer cancel ----- //
 
-Unipointer.prototype.onMSPointerCancel =
-Unipointer.prototype.onpointercancel = function( event ) {
+proto.onMSPointerCancel =
+proto.onpointercancel = function( event ) {
   if ( event.pointerId == this.pointerIdentifier ) {
     this._pointerCancel( event, event );
   }
 };
 
-Unipointer.prototype.ontouchcancel = function( event ) {
+proto.ontouchcancel = function( event ) {
   var touch = this.getTouch( event.changedTouches );
   if ( touch ) {
     this._pointerCancel( event, touch );
@@ -289,23 +278,23 @@ Unipointer.prototype.ontouchcancel = function( event ) {
  * @param {Event or Touch} pointer
  * @private
  */
-Unipointer.prototype._pointerCancel = function( event, pointer ) {
+proto._pointerCancel = function( event, pointer ) {
   this._pointerDone();
   this.pointerCancel( event, pointer );
 };
 
 // public
-Unipointer.prototype.pointerCancel = function( event, pointer ) {
+proto.pointerCancel = function( event, pointer ) {
   this.emitEvent( 'pointerCancel', [ event, pointer ] );
 };
 
 // -----  ----- //
 
-// utility function for getting x/y cooridinates from event, because IE8
+// utility function for getting x/y coords from event
 Unipointer.getPointerPoint = function( pointer ) {
   return {
-    x: pointer.pageX !== undefined ? pointer.pageX : pointer.clientX,
-    y: pointer.pageY !== undefined ? pointer.pageY : pointer.clientY
+    x: pointer.pageX,
+    y: pointer.pageY
   };
 };
 

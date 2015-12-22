@@ -1,11 +1,10 @@
 {
   "name": "unipointer",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Do one thing with one pointer",
   "main": "unipointer.js",
   "dependencies": {
-    "wolfy87-eventemitter": "~4.2.11",
-    "eventie": "~1.0.6"
+    "wolfy87-eventemitter": "~4.2.11"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
