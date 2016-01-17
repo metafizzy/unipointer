@@ -1,38 +1,36 @@
 /*!
- * Unipointer v2.0.0
+ * Unipointer v2.1.0
  * base class for doing one thing with pointer event
  * MIT license
  */
 
 /*jshint browser: true, undef: true, unused: true, strict: true */
-/*global define: false, module: false, require: false */
 
 ( function( window, factory ) {
-  'use strict';
   // universal module definition
-
+  /* jshint strict: false */ /*global define, module, require */
   if ( typeof define == 'function' && define.amd ) {
     // AMD
     define( [
-      'eventEmitter/EventEmitter'
-    ], function( EventEmitter ) {
-      return factory( window, EventEmitter );
+      'ev-emitter/ev-emitter'
+    ], function( EvEmitter ) {
+      return factory( window, EvEmitter );
     });
   } else if ( typeof module == 'object' && module.exports ) {
     // CommonJS
     module.exports = factory(
       window,
-      require('wolfy87-eventemitter')
+      require('ev-emitter')
     );
   } else {
     // browser global
     window.Unipointer = factory(
       window,
-      window.EventEmitter
+      window.EvEmitter
     );
   }
 
-}( window, function factory( window, EventEmitter ) {
+}( window, function factory( window, EvEmitter ) {
 
 'use strict';
 
@@ -40,8 +38,8 @@ function noop() {}
 
 function Unipointer() {}
 
-// inherit EventEmitter
-var proto = Unipointer.prototype = Object.create( EventEmitter.prototype );
+// inherit EvEmitter
+var proto = Unipointer.prototype = Object.create( EvEmitter.prototype );
 
 proto.bindStartEvent = function( elem ) {
   this._bindStartEvent( elem, true );
