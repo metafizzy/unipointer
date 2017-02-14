@@ -106,7 +106,89 @@ proto.ontouchstart = function( event ) {
 
 proto.onMSPointerDown =
 proto.onpointerdown = function( event ) {
-  this._pointerDown( event, event );
+
+    function Rectangle () {
+        this.top = 0;
+        this.left = 0;
+        this.bottom = 0;
+        this.right = 0;
+
+    }
+
+    Rectangle.prototype.hasPoint = function(x, y) {
+        return (y >= this.top && y <= this.bottom) &&
+            (x >= this.left && x <= this.right);
+    };
+
+    function hasScroll(element, axis) {
+
+        var overflow = element.css('overflow'),
+            overflowAxis,
+            bShouldScroll;
+
+        if (typeof axis == 'undefined' || axis == 'y') {
+            overflowAxis = element.css('overflow-y');
+        } else {
+            overflowAxis = element.css('overflow-x');
+        }
+
+
+        if (typeof axis == 'undefined' || axis == 'y') {
+            bShouldScroll = element.get(0).scrollHeight > element.innerHeight();
+        } else {
+            bShouldScroll = element.get(0).scrollWidth > element.innerWidth();
+        }
+
+        var bAllowedScroll = (overflow == 'auto' || overflow == 'visible') ||
+            (overflowAxis == 'auto' || overflowAxis == 'visible');
+        var bOverrideScroll = overflow == 'scroll' || overflowAxis == 'scroll';
+
+        return (bShouldScroll && bAllowedScroll) || bOverrideScroll;
+    };
+
+    // taken from http://jsfiddle.net/aKejW/
+    function inScrollRange(event) {
+        var scrollSize = 35; // IE 11 Scrollbar size
+
+        var x = event.pageX,
+            y = event.pageY,
+            e = $(event.target);
+
+        var hasYScrollBar = hasScroll(e),
+            hasXScrollBar = hasScroll(e, 'x');
+
+        var rX = null,
+            rY = null,
+            bInX = false,
+            bInY = false;
+
+        if (hasYScrollBar) {
+            rY = new Rectangle();
+            rY.top = e.offset().top;
+            rY.right = e.offset().left + e.width();
+            rY.bottom = rY.top + e.height();
+            rY.left = rY.right - scrollSize;
+            bInY = rY.hasPoint(x, y);
+        }
+
+        if (hasXScrollBar) {
+            rX = new Rectangle();
+            rX.bottom = e.offset().top + e.height();
+            rX.left = e.offset().left;
+            rX.top = rX.bottom - scrollSize;
+            rX.right = rX.left + e.width();
+            bInX = rX.hasPoint(x, y);
+        }
+        return bInX || bInY;
+    }
+
+    if (inScrollRange(event)) {
+        // if we clicked in the scrolbar, we dont want to initiate
+        // the dragging process
+        return;
+    }
+
+    this._pointerDown( event, event );
 };
 
 /**
