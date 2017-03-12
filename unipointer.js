@@ -30,7 +30,7 @@
     );
   }
 
-}( window, function factory( window, EvEmitter ) {
+}( typeof window !== 'undefined' ? window : global.window, function factory( window, EvEmitter ) {
 
 'use strict';
 
