@@ -30,7 +30,7 @@
     );
   }
 
-}( typeof window !== 'undefined' ? window : global.window, function factory( window, EvEmitter ) {
+}( typeof window !== 'undefined' ? window : this, function factory( window, EvEmitter ) {
 
 'use strict';
 
