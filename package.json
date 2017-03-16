@@ -4,7 +4,7 @@
   "description": "Do one thing with one pointer",
   "main": "unipointer.js",
   "dependencies": {
-    "ev-emitter": "~1.0.1"
+    "ev-emitter": "^1.0.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

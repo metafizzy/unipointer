@@ -2,7 +2,7 @@
   "name": "unipointer",
   "main": "unipointer.js",
   "dependencies": {
-    "ev-emitter": "~1.0.1"
+    "ev-emitter": "^1.0.1"
   },
   "homepage": "https://github.com/metafizzy/unipointer",
   "authors": [
