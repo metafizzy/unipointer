@@ -1,5 +1,5 @@
 /*!
- * Unipointer v2.2.0
+ * Unipointer v2.2.1
  * base class for doing one thing with pointer event
  * MIT license
  */
@@ -111,8 +111,9 @@ proto.onpointerdown = function( event ) {
  * @param {Event or Touch} pointer
  */
 proto._pointerDown = function( event, pointer ) {
-  // dismiss other pointers
-  if ( this.isPointerDown ) {
+  // dismiss right click and other pointers
+  // button = 0 is okay, 1-4 not
+  if ( event.button || this.isPointerDown ) {
     return;
   }
 
