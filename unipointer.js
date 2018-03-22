@@ -1,5 +1,5 @@
 /*!
- * Unipointer v2.2.1
+ * Unipointer v2.3.0
  * base class for doing one thing with pointer event
  * MIT license
  */
@@ -50,22 +50,24 @@ proto.unbindStartEvent = function( elem ) {
 };
 
 /**
- * works as unbinder, as you can ._bindStart( false ) to unbind
- * @param {Boolean} isBind - will unbind if falsey
+ * Add or remove start event
+ * @param {Boolean} isAdd - remove if falsey
  */
-proto._bindStartEvent = function( elem, isBind ) {
-  // munge isBind, default to true
-  isBind = isBind === undefined ? true : !!isBind;
-  var bindMethod = isBind ? 'addEventListener' : 'removeEventListener';
+proto._bindStartEvent = function( elem, isAdd ) {
+  // munge isAdd, default to true
+  isAdd = isAdd === undefined ? true : isAdd;
+  var bindMethod = isAdd ? 'addEventListener' : 'removeEventListener';
 
+  // default to mouse events
+  var startEvent = 'mousedown';
   if ( window.PointerEvent ) {
-    // Pointer Events. Chrome 55, IE11, Edge 14
-    elem[ bindMethod ]( 'pointerdown', this );
-  } else {
-    // listen for both, for devices like Chrome Pixel
-    elem[ bindMethod ]( 'mousedown', this );
-    elem[ bindMethod ]( 'touchstart', this );
+    // Pointer Events
+    startEvent = 'pointerdown';
+  } else if ( 'ontouchstart' in window ) {
+    // Touch Events. iOS Safari
+    startEvent = 'touchstart';
   }
+  elem[ bindMethod ]( startEvent, this );
 };
 
 // trigger handler methods for events
