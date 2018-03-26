@@ -240,12 +240,15 @@ proto.pointerUp = function( event, pointer ) {
 
 // triggered on pointer up & pointer cancel
 proto._pointerDone = function() {
+  this._pointerReset();
+  this._unbindPostStartEvents();
+  this.pointerDone();
+};
+
+proto._pointerReset = function() {
   // reset properties
   this.isPointerDown = false;
   delete this.pointerIdentifier;
-  // remove events
-  this._unbindPostStartEvents();
-  this.pointerDone();
 };
 
 proto.pointerDone = noop;
