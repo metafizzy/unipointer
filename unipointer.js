@@ -67,7 +67,7 @@ proto._bindStartEvent = function( elem, isAdd ) {
     // Touch Events. iOS Safari
     startEvent = 'touchstart';
   }
-  elem[ bindMethod ]( startEvent, this );
+  elem[ bindMethod ]( startEvent, this, this.listenerOpts || false );
 };
 
 // trigger handler methods for events
