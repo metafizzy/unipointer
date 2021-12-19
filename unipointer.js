@@ -1,5 +1,5 @@
 /*!
- * Unipointer v2.3.0
+ * Unipointer v2.4.0
  * base class for doing one thing with pointer event
  * MIT license
  */
@@ -60,12 +60,13 @@ proto._bindStartEvent = function( elem, isAdd ) {
 
   // default to mouse events
   var startEvent = 'mousedown';
-  if ( window.PointerEvent ) {
+  if ( 'ontouchstart' in window ) {
+    // HACK prefer Touch Events as you can preventDefault on touchstart to
+    // disable scroll in iOS & mobile Chrome metafizzy/flickity#1177
+    startEvent = 'touchstart';
+  } else if ( window.PointerEvent ) {
     // Pointer Events
     startEvent = 'pointerdown';
-  } else if ( 'ontouchstart' in window ) {
-    // Touch Events. iOS Safari
-    startEvent = 'touchstart';
   }
   elem[ bindMethod ]( startEvent, this );
 };
