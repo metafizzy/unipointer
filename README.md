@@ -1,8 +1,12 @@
+# Deprecated
+
+Unipointer code has been merged into [Unidragger v3](https://github.com/metafizzy/unidragger). Unipointer will no longer be maintained as its own package.
+
 # Unipointer
 
 Base class for doing one thing with pointer event
 
-Used with [Unidragger](https://github.com/metafizzy/unidragger) and [TapListener](https://github.com/metafizzy/tap-listener)
+Used with [Unidragger](https://github.com/metafizzy/unidragger)
 
 ## Install
 
